@@ -26,7 +26,7 @@ export const QUESTIONS: QuestionConfig[] = [
         value: '40-49',
         label: '40–49',
         sublabel: 'Years Old',
-        image: `${UNSPLASH}/photo-1534528526-95d3fe7c0df6?w=400&h=520&fit=crop&q=80`,
+        image: `${UNSPLASH}/photo-1552058544-f2b08422138a?w=400&h=520&fit=crop&q=80`,
       },
       {
         value: '50+',
