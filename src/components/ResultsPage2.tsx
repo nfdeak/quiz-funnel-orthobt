@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 
-const PRODUCT_URL = 'https://orthobelt.com/products/orthobelt'; // placeholder — update with real URL
+const PRODUCT_URL = 'https://us.orthotal.com/products/orthobelt';
 
 function getDynamicDate(daysFromNow: number): string {
   const d = new Date();
@@ -53,7 +53,7 @@ export default function ResultsPage2() {
           <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-center">
             <div className="w-full rounded-lg overflow-hidden mb-2">
               <img
-                src="https://v3b.fal.media/files/b/0a96de65/3us_l1d3H4RyCRr28HXsw_fmP4kHew.png"
+                src="/education/si-joint-inflamed.png"
                 alt="SI Joint inflamed"
                 className="w-full object-cover"
               />
@@ -64,7 +64,7 @@ export default function ResultsPage2() {
           <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-center">
             <div className="w-full rounded-lg overflow-hidden mb-2">
               <img
-                src="https://v3b.fal.media/files/b/0a96de65/y4cvW91ZqhiUVw8QkuhYx_cbjHGqqO.png"
+                src="/education/si-joint-stabilized.png"
                 alt="SI Joint stabilized"
                 className="w-full object-cover"
               />

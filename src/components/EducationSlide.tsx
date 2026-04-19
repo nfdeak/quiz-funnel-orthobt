@@ -27,7 +27,7 @@ export default function EducationSlide({ onContinue }: EducationSlideProps) {
         <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 mb-6">
           <p className="text-stone-700 text-base leading-relaxed text-center">
             Stretching, physiotherapy, and pain medication{' '}
-            <strong className="text-stone-900">don't work long-term</strong> because they don't
+            <strong className="text-stone-900">don&#39;t work long-term</strong> because they don&#39;t
             address the SI joint — the <strong className="text-amber-700">real source</strong> of
             your pain.
           </p>
@@ -39,7 +39,7 @@ export default function EducationSlide({ onContinue }: EducationSlideProps) {
           <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-center">
             <div className="w-full rounded-lg overflow-hidden mb-3">
               <img
-                src="https://v3b.fal.media/files/b/0a96de65/5V--_jkfxAjF0BxN_3_Jn_rLSGbo2B.png"
+                src="/education/treatments-dont-work.png"
                 alt="Treatments that don't work"
                 className="w-full object-cover"
               />
@@ -58,7 +58,7 @@ export default function EducationSlide({ onContinue }: EducationSlideProps) {
           <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-center">
             <div className="w-full rounded-lg overflow-hidden mb-3">
               <img
-                src="https://v3b.fal.media/files/b/0a96de65/gbBHK6jRYyyoBKYvlCXF6_FtZctKyz.png"
+                src="/education/orthobelt-root-cause-fix.png"
                 alt="OrthoBelt root cause fix"
                 className="w-full object-cover"
               />

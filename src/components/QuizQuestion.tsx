@@ -56,22 +56,46 @@ function PhotoCard({ option, isSelected, onClick }: { option: QuestionOption; is
 
 // ── Square body-diagram card ────────────────────────────────────────────────
 function BodyCard({ option, isSelected, onClick }: { option: QuestionOption; isSelected: boolean; onClick: () => void }) {
+  const hasSublabel = Boolean(option.sublabel);
+
   return (
     <div style={{ aspectRatio: '1 / 1' }} className="relative w-full">
       <motion.button
         whileTap={{ scale: 0.96 }}
         onClick={onClick}
-        className={`absolute inset-0 overflow-hidden rounded-2xl border-2 transition-all duration-150 cursor-pointer w-full h-full flex flex-col items-center justify-center gap-1 px-2
+        className={`absolute inset-0 overflow-hidden rounded-2xl border-2 transition-all duration-150 cursor-pointer w-full h-full grid grid-rows-[3fr_1fr] px-2 pt-2 pb-2
           ${isSelected ? 'border-amber-500 bg-amber-50' : 'border-stone-200 bg-white hover:border-amber-300 hover:bg-amber-50/40'}`}
       >
-        <div className="w-3/5 flex-1 flex items-center justify-center py-2">
-          <BodyDiagram area={option.bodyPart!} selected={isSelected} />
+        <div className="min-h-0 w-full flex items-center justify-center overflow-hidden">
+          <div className="w-3/5 h-full max-h-[140px]">
+            <BodyDiagram area={option.bodyPart!} selected={isSelected} />
+          </div>
         </div>
-        <div className="pb-3 text-center px-1">
-          <span className={`font-semibold text-sm leading-tight block ${isSelected ? 'text-amber-900' : 'text-stone-700'}`}>
+        <div className="min-h-0 h-full flex flex-col items-center justify-center text-center px-1 overflow-hidden leading-tight">
+          <span
+            className={`font-semibold ${hasSublabel ? 'text-[12px]' : 'text-[13px]'} leading-tight block ${isSelected ? 'text-amber-900' : 'text-stone-700'}`}
+            style={{
+              display: '-webkit-box',
+              WebkitLineClamp: hasSublabel ? 1 : 2,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden',
+            }}
+          >
             {option.label}
           </span>
-          {option.sublabel && <span className="text-stone-400 text-xs">{option.sublabel}</span>}
+          {option.sublabel && (
+            <span
+              className="text-stone-400 text-[11px] block mt-0"
+              style={{
+                display: '-webkit-box',
+                WebkitLineClamp: 1,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
+              }}
+            >
+              {option.sublabel}
+            </span>
+          )}
         </div>
         {isSelected && <CheckBadge />}
       </motion.button>
@@ -171,8 +195,8 @@ export default function QuizQuestion({ config, currentAnswer, onAnswer }: QuizQu
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: i * 0.06, duration: 0.22 }}
                 className={cardClass}
-                // For the last odd item spanning 2 cols, limit its width so it doesn't stretch weirdly
-                style={isLastOdd ? { maxWidth: 'calc(50% - 6px)', margin: '0 auto' } : {}}
+                // Keep the final odd card centered without letting the grid item collapse.
+                style={isLastOdd ? { width: 'calc(50% - 6px)', margin: '0 auto' } : {}}
               >
                 {option.image && <PhotoCard option={option} isSelected={isSelected} onClick={handleClick} />}
                 {option.bodyPart && <BodyCard option={option} isSelected={isSelected} onClick={handleClick} />}

@@ -37,7 +37,7 @@ export default function ResultsPage1({ onContinue }: ResultsPage1Props) {
           {/* SI Joint illustration */}
           <div className="w-full rounded-xl overflow-hidden mb-5">
             <img
-              src="https://v3b.fal.media/files/b/0a96de65/3us_l1d3H4RyCRr28HXsw_fmP4kHew.png"
+              src="/education/si-joint-inflamed.png"
               alt="SI Joint inflammation"
               className="w-full object-cover"
             />
@@ -84,6 +84,7 @@ export default function ResultsPage1({ onContinue }: ResultsPage1Props) {
             </thead>
             <tbody>
               {[
+                { label: 'Pain type', value: 'Nerve irritation', highlight: true },
                 { label: 'Root cause', value: 'SI joint dysfunction', highlight: true },
                 { label: 'Room for improvement', value: 'High', highlight: true },
                 { label: 'Impact on daily life', value: 'Noticeable', highlight: false },

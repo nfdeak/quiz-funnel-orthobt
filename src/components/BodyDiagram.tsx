@@ -84,17 +84,36 @@ export default function BodyDiagram({ area, selected }: BodyDiagramProps) {
 
       {area === 'not-sure' && (
         <>
-          <text
-            x="50"
-            y="75"
-            textAnchor="middle"
-            fontSize="32"
-            fill="#f59e0b"
-            opacity="0.85"
-            fontWeight="bold"
-          >
-            ?
-          </text>
+          <circle cx="50" cy="60" r="12" fill="#fef3c7" stroke="#f59e0b" strokeWidth="1.5" />
+          <path
+            d="M46 55 Q46 49 52 49 Q58 49 58 55 Q58 59 53 62 Q50 64 50 68"
+            stroke="#d97706"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            fill="none"
+          />
+          <circle cx="50" cy="73" r="1.8" fill="#d97706" />
+          <circle cx="42" cy="82" r="9" fill={red} opacity="0.2" />
+          <circle cx="61" cy="96" r="10" fill={red} opacity="0.24" />
+          <circle cx="36" cy="116" r="8" fill={red} opacity="0.18" />
+          <path
+            d="M46 86 C52 89 56 93 58 99"
+            stroke={red}
+            strokeWidth="2"
+            strokeLinecap="round"
+            fill="none"
+            opacity="0.55"
+          />
+          <path
+            d="M55 100 L58 99 L57 95"
+            stroke={red}
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            fill="none"
+            opacity="0.55"
+          />
         </>
       )}
     </svg>
