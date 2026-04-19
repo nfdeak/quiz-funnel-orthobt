@@ -13,142 +13,97 @@ interface QuizQuestionProps {
 
 function CheckBadge() {
   return (
-    <div className="absolute top-2 right-2 w-6 h-6 bg-amber-500 rounded-full flex items-center justify-center shadow-md z-10">
-      <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 12 12">
+    <div className="absolute top-2 right-2 w-6 h-6 bg-amber-500 rounded-full flex items-center justify-center shadow z-10">
+      <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 12 12">
         <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     </div>
   );
 }
 
-// ── Photo card (Q1 age) ─────────────────────────────────────────────────────
-function PhotoCard({
-  option,
-  isSelected,
-  onClick,
-}: {
-  option: QuestionOption;
-  isSelected: boolean;
-  onClick: () => void;
-}) {
+// ── Square photo card — Spartan-style ───────────────────────────────────────
+function PhotoCard({ option, isSelected, onClick }: { option: QuestionOption; isSelected: boolean; onClick: () => void }) {
   return (
-    <motion.button
-      whileTap={{ scale: 0.97 }}
-      onClick={onClick}
-      style={{ aspectRatio: '3/4' }}
-      className={`relative overflow-hidden rounded-2xl w-full bg-stone-300 border-2 transition-all duration-200 cursor-pointer block
-        ${isSelected ? 'border-amber-500 ring-2 ring-amber-300' : 'border-transparent'}`}
-    >
-      {/* Photo */}
-      <img
-        src={option.image}
-        alt={option.label}
-        className="absolute inset-0 w-full h-full object-cover"
-        loading="lazy"
-      />
-      {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
-      {/* Selected tint */}
-      {isSelected && <div className="absolute inset-0 bg-amber-500/25" />}
-      {/* Label */}
-      <div className="absolute bottom-0 left-0 right-0 p-3 text-center">
-        <span className="text-white font-bold text-lg leading-tight block">{option.label}</span>
-        {option.sublabel && (
-          <span className="text-white/75 text-xs block">{option.sublabel}</span>
-        )}
-      </div>
-      {isSelected && <CheckBadge />}
-    </motion.button>
+    // Outer div enforces square aspect ratio from the grid column width
+    <div style={{ aspectRatio: '1 / 1' }} className="relative w-full">
+      <motion.button
+        whileTap={{ scale: 0.96 }}
+        onClick={onClick}
+        className={`absolute inset-0 overflow-hidden rounded-2xl border-2 transition-all duration-150 cursor-pointer w-full h-full
+          ${isSelected ? 'border-amber-500' : 'border-stone-200 hover:border-amber-300'}`}
+      >
+        {/* Image fills card */}
+        <img
+          src={option.image}
+          alt={option.label}
+          className="absolute inset-0 w-full h-full object-cover object-center"
+          loading="lazy"
+        />
+        {/* Gradient — bottom 55% of card */}
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.18) 50%, transparent 100%)' }} />
+        {/* Selected amber overlay */}
+        {isSelected && <div className="absolute inset-0 bg-amber-500/20" />}
+        {/* Label at bottom */}
+        <div className="absolute bottom-0 left-0 right-0 pb-3 px-2 text-center">
+          <span className="text-white font-bold text-base leading-tight block drop-shadow">{option.label}</span>
+          {option.sublabel && <span className="text-white/70 text-xs block">{option.sublabel}</span>}
+        </div>
+        {isSelected && <CheckBadge />}
+      </motion.button>
+    </div>
   );
 }
 
-// ── Body diagram card (Q2 pain location) ───────────────────────────────────
-function BodyCard({
-  option,
-  isSelected,
-  onClick,
-  isOdd,
-}: {
-  option: QuestionOption;
-  isSelected: boolean;
-  onClick: () => void;
-  isOdd: boolean;
-}) {
+// ── Square body-diagram card ────────────────────────────────────────────────
+function BodyCard({ option, isSelected, onClick }: { option: QuestionOption; isSelected: boolean; onClick: () => void }) {
   return (
-    <motion.button
-      whileTap={{ scale: 0.97 }}
-      onClick={onClick}
-      className={`relative overflow-hidden rounded-2xl border-2 transition-all duration-200 cursor-pointer flex flex-col items-center pt-3 pb-3 px-2
-        ${isOdd ? 'col-span-2' : ''}
-        ${isSelected
-          ? 'border-amber-500 bg-amber-50 ring-2 ring-amber-300'
-          : 'border-stone-200 bg-white hover:border-amber-300 hover:bg-amber-50/40'
-        }`}
-    >
-      <div className={`w-full flex items-center justify-center ${isOdd ? 'h-28' : 'h-32'}`}>
-        <BodyDiagram area={option.bodyPart!} selected={isSelected} />
-      </div>
-      <span className={`font-semibold text-sm text-center leading-tight mt-1
-        ${isSelected ? 'text-amber-900' : 'text-stone-700'}`}>
-        {option.label}
-      </span>
-      {option.sublabel && (
-        <span className="text-stone-400 text-xs text-center">{option.sublabel}</span>
-      )}
-      {isSelected && <CheckBadge />}
-    </motion.button>
+    <div style={{ aspectRatio: '1 / 1' }} className="relative w-full">
+      <motion.button
+        whileTap={{ scale: 0.96 }}
+        onClick={onClick}
+        className={`absolute inset-0 overflow-hidden rounded-2xl border-2 transition-all duration-150 cursor-pointer w-full h-full flex flex-col items-center justify-center gap-1 px-2
+          ${isSelected ? 'border-amber-500 bg-amber-50' : 'border-stone-200 bg-white hover:border-amber-300 hover:bg-amber-50/40'}`}
+      >
+        <div className="w-3/5 flex-1 flex items-center justify-center py-2">
+          <BodyDiagram area={option.bodyPart!} selected={isSelected} />
+        </div>
+        <div className="pb-3 text-center px-1">
+          <span className={`font-semibold text-sm leading-tight block ${isSelected ? 'text-amber-900' : 'text-stone-700'}`}>
+            {option.label}
+          </span>
+          {option.sublabel && <span className="text-stone-400 text-xs">{option.sublabel}</span>}
+        </div>
+        {isSelected && <CheckBadge />}
+      </motion.button>
+    </div>
   );
 }
 
-// ── Emoji icon card (Q4, Q7, Q8) ───────────────────────────────────────────
-function EmojiCard({
-  option,
-  isSelected,
-  onClick,
-}: {
-  option: QuestionOption;
-  isSelected: boolean;
-  onClick: () => void;
-}) {
+// ── Square emoji card ────────────────────────────────────────────────────────
+function EmojiCard({ option, isSelected, onClick }: { option: QuestionOption; isSelected: boolean; onClick: () => void }) {
   return (
-    <motion.button
-      whileTap={{ scale: 0.97 }}
-      onClick={onClick}
-      className={`relative overflow-hidden rounded-2xl border-2 transition-all duration-200 cursor-pointer flex flex-col items-center justify-center py-5 px-3 gap-2
-        ${isSelected
-          ? 'border-amber-500 ring-2 ring-amber-300'
-          : 'border-stone-200 hover:border-amber-300'
-        }`}
-    >
-      {/* Gradient bg */}
-      <div className={`absolute inset-0 bg-gradient-to-b ${option.bg ?? 'from-stone-100 to-stone-50'} opacity-80`} />
-      <span className="relative text-4xl">{option.emoji}</span>
-      <div className="relative text-center">
-        <span className={`font-bold text-sm block ${isSelected ? 'text-amber-900' : 'text-stone-800'}`}>
-          {option.label}
-        </span>
-        {option.sublabel && (
-          <span className="text-stone-500 text-xs block leading-snug mt-0.5">{option.sublabel}</span>
-        )}
-      </div>
-      {isSelected && <CheckBadge />}
-    </motion.button>
+    <div style={{ aspectRatio: '1 / 1' }} className="relative w-full">
+      <motion.button
+        whileTap={{ scale: 0.96 }}
+        onClick={onClick}
+        className={`absolute inset-0 overflow-hidden rounded-2xl border-2 transition-all duration-150 cursor-pointer w-full h-full flex flex-col items-center justify-center gap-1.5 px-3
+          ${isSelected ? 'border-amber-500' : 'border-stone-200 hover:border-amber-300'}`}
+      >
+        <div className={`absolute inset-0 bg-gradient-to-b ${option.bg ?? 'from-stone-100 to-stone-50'}`} />
+        <span className="relative text-4xl">{option.emoji}</span>
+        <div className="relative text-center">
+          <span className={`font-bold text-sm block leading-tight ${isSelected ? 'text-amber-900' : 'text-stone-800'}`}>{option.label}</span>
+          {option.sublabel && <span className="text-stone-500 text-xs block leading-snug mt-0.5">{option.sublabel}</span>}
+        </div>
+        {isSelected && <CheckBadge />}
+      </motion.button>
+    </div>
   );
 }
 
-// ── List item (default) ─────────────────────────────────────────────────────
-function ListItem({
-  option,
-  isSelected,
-  isMulti,
-  onClick,
-  index,
-}: {
-  option: QuestionOption;
-  isSelected: boolean;
-  isMulti: boolean;
-  onClick: () => void;
-  index: number;
+// ── List item (default, multi-select, Q3 yes/no) ────────────────────────────
+function ListItem({ option, isSelected, isMulti, onClick, index }: {
+  option: QuestionOption; isSelected: boolean; isMulti: boolean; onClick: () => void; index: number;
 }) {
   return (
     <motion.button
@@ -157,17 +112,12 @@ function ListItem({
       transition={{ delay: index * 0.05, duration: 0.22 }}
       onClick={onClick}
       className={`w-full text-left px-5 py-4 rounded-xl border-2 font-medium text-base transition-all duration-150 cursor-pointer
-        ${isSelected
-          ? 'bg-amber-50 border-amber-500 text-amber-900'
-          : 'bg-white border-stone-200 text-stone-700 hover:border-amber-300 hover:bg-amber-50/40'
-        }`}
+        ${isSelected ? 'bg-amber-50 border-amber-500 text-amber-900' : 'bg-white border-stone-200 text-stone-700 hover:border-amber-300 hover:bg-amber-50/40'}`}
     >
       <div className="flex items-center gap-3">
-        <span
-          className={`flex-shrink-0 w-5 h-5 flex items-center justify-center transition-colors border-2
-            ${isMulti ? 'rounded' : 'rounded-full'}
-            ${isSelected ? 'bg-amber-500 border-amber-500' : 'border-stone-300'}`}
-        >
+        <span className={`flex-shrink-0 w-5 h-5 flex items-center justify-center border-2 transition-colors
+          ${isMulti ? 'rounded' : 'rounded-full'}
+          ${isSelected ? 'bg-amber-500 border-amber-500' : 'border-stone-300'}`}>
           {isSelected && (
             <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 12 12">
               <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -180,114 +130,68 @@ function ListItem({
   );
 }
 
-// ── Main component ──────────────────────────────────────────────────────────
+// ── Main ────────────────────────────────────────────────────────────────────
 export default function QuizQuestion({ config, currentAnswer, onAnswer }: QuizQuestionProps) {
   const [selected, setSelected] = useState<string[]>(
     Array.isArray(currentAnswer) ? currentAnswer : currentAnswer ? [currentAnswer] : []
   );
 
-  function handleSingle(value: string) {
-    onAnswer(value);
-  }
-
-  function handleMultiToggle(value: string) {
-    setSelected((prev) =>
-      prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]
-    );
-  }
+  const handleSingle = (value: string) => onAnswer(value);
+  const handleMultiToggle = (value: string) =>
+    setSelected(prev => prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value]);
 
   const isGrid = config.layout === 'grid';
-  const hasPhotos = config.options.some((o) => o.image);
-  const hasBodyParts = config.options.some((o) => o.bodyPart);
-  const hasEmoji = config.options.some((o) => o.emoji);
+  const hasPhotos = config.options.some(o => o.image);
+  const hasBodyParts = config.options.some(o => o.bodyPart);
+  const hasEmoji = config.options.some(o => o.emoji);
 
   return (
-    <div className="w-full max-w-xl mx-auto px-5 py-8">
+    <div className="w-full max-w-sm mx-auto px-4 py-8">
       <motion.h2
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-2xl md:text-3xl font-bold text-stone-800 text-center mb-6 leading-snug"
+        className="text-2xl font-bold text-stone-800 text-center mb-6 leading-snug"
       >
         {config.question}
       </motion.h2>
 
-      {/* ── Grid layouts ── */}
       {isGrid && (hasPhotos || hasBodyParts || hasEmoji) ? (
         <div className="grid grid-cols-2 gap-3">
           {config.options.map((option, i) => {
-            const isSelected = config.multiSelect
-              ? selected.includes(option.value)
-              : currentAnswer === option.value;
+            const isSelected = config.multiSelect ? selected.includes(option.value) : currentAnswer === option.value;
             const isLastOdd = config.options.length % 2 !== 0 && i === config.options.length - 1;
+            const handleClick = () => config.multiSelect ? handleMultiToggle(option.value) : handleSingle(option.value);
 
-            const handleClick = () =>
-              config.multiSelect ? handleMultiToggle(option.value) : handleSingle(option.value);
+            const cardClass = isLastOdd ? 'col-span-2' : '';
 
-            if (option.image) {
-              return (
-                <motion.div
-                  key={option.value}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: i * 0.06, duration: 0.25 }}
-                >
-                  <PhotoCard option={option} isSelected={isSelected} onClick={handleClick} />
-                </motion.div>
-              );
-            }
-
-            if (option.bodyPart) {
-              return (
-                <motion.div
-                  key={option.value}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: i * 0.06, duration: 0.25 }}
-                  className={isLastOdd ? 'col-span-2' : ''}
-                >
-                  <BodyCard
-                    option={option}
-                    isSelected={isSelected}
-                    onClick={handleClick}
-                    isOdd={false}
-                  />
-                </motion.div>
-              );
-            }
-
-            if (option.emoji) {
-              return (
-                <motion.div
-                  key={option.value}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: i * 0.06, duration: 0.25 }}
-                  className={isLastOdd ? 'col-span-2' : ''}
-                >
-                  <EmojiCard option={option} isSelected={isSelected} onClick={handleClick} />
-                </motion.div>
-              );
-            }
-
-            return null;
+            return (
+              <motion.div
+                key={option.value}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: i * 0.06, duration: 0.22 }}
+                className={cardClass}
+                // For the last odd item spanning 2 cols, limit its width so it doesn't stretch weirdly
+                style={isLastOdd ? { maxWidth: 'calc(50% - 6px)', margin: '0 auto' } : {}}
+              >
+                {option.image && <PhotoCard option={option} isSelected={isSelected} onClick={handleClick} />}
+                {option.bodyPart && <BodyCard option={option} isSelected={isSelected} onClick={handleClick} />}
+                {option.emoji && <EmojiCard option={option} isSelected={isSelected} onClick={handleClick} />}
+              </motion.div>
+            );
           })}
         </div>
       ) : (
-        /* ── List layout (default) ── */
         <div className="flex flex-col gap-3">
           {config.options.map((option, i) => {
-            const isSelected = config.multiSelect
-              ? selected.includes(option.value)
-              : currentAnswer === option.value;
+            const isSelected = config.multiSelect ? selected.includes(option.value) : currentAnswer === option.value;
             return (
               <ListItem
                 key={option.value}
                 option={option}
                 isSelected={isSelected}
                 isMulti={!!config.multiSelect}
-                onClick={() =>
-                  config.multiSelect ? handleMultiToggle(option.value) : handleSingle(option.value)
-                }
+                onClick={() => config.multiSelect ? handleMultiToggle(option.value) : handleSingle(option.value)}
                 index={i}
               />
             );
@@ -295,14 +199,12 @@ export default function QuizQuestion({ config, currentAnswer, onAnswer }: QuizQu
         </div>
       )}
 
-      {/* Continue button for multi-select */}
       {config.multiSelect && (
         <motion.button
-          initial={{ opacity: 0 }}
           animate={{ opacity: selected.length > 0 ? 1 : 0.4 }}
           onClick={() => selected.length > 0 && onAnswer(selected)}
           disabled={selected.length === 0}
-          className="mt-6 w-full py-4 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-lg tracking-wide transition-colors duration-200 disabled:opacity-40"
+          className="mt-5 w-full py-4 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-lg tracking-wide transition-colors duration-200 disabled:opacity-40"
         >
           Continue →
         </motion.button>
