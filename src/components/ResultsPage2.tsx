@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { withBasePath } from '@/lib/withBasePath';
 
 const PRODUCT_URL = 'https://us.orthotal.com/products/orthobelt';
@@ -119,10 +120,12 @@ export default function ResultsPage2({ onClaimDiscount }: ResultsPage2Props) {
         <div className="grid grid-cols-2 gap-3 mb-6">
           <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-center">
             <div className="w-full rounded-lg overflow-hidden mb-2">
-              <img
+              <Image
                 src={withBasePath('/education/si-joint-inflamed.png')}
                 alt="SI Joint inflamed"
-                className="w-full object-cover"
+                width={1408}
+                height={768}
+                className="w-full h-auto"
               />
             </div>
             <p className="text-red-600 text-xs font-bold">SI Joint NOW</p>
@@ -130,10 +133,12 @@ export default function ResultsPage2({ onClaimDiscount }: ResultsPage2Props) {
           </div>
           <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-center">
             <div className="w-full rounded-lg overflow-hidden mb-2">
-              <img
+              <Image
                 src={withBasePath('/education/si-joint-stabilized.png')}
                 alt="SI Joint stabilised"
-                className="w-full object-cover"
+                width={1408}
+                height={768}
+                className="w-full h-auto"
               />
             </div>
             <p className="text-green-700 text-xs font-bold">YOUR GOAL</p>

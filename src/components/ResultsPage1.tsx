@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { withBasePath } from '@/lib/withBasePath';
 
 interface ResultsPage1Props {
@@ -72,7 +73,7 @@ export default function ResultsPage1({ onContinue }: ResultsPage1Props) {
   }, []);
 
   return (
-    <div className="w-full max-w-xl mx-auto px-6 py-10 max-md:pb-[80px]">
+    <div className="w-full max-w-xl mx-auto px-6 py-10 max-md:pb-20">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -100,10 +101,12 @@ export default function ResultsPage1({ onContinue }: ResultsPage1Props) {
 
           {/* SI Joint illustration */}
           <div className="w-full rounded-xl overflow-hidden mb-5">
-            <img
+            <Image
               src={withBasePath('/education/si-joint-inflamed.png')}
               alt="SI Joint inflammation"
-              className="w-full object-cover"
+              width={1408}
+              height={768}
+              className="w-full h-auto"
             />
           </div>
 
@@ -115,7 +118,7 @@ export default function ResultsPage1({ onContinue }: ResultsPage1Props) {
               <span>Medium</span>
               <span className="font-bold text-red-500">High ◀</span>
             </div>
-            <div className="h-3 rounded-full bg-gradient-to-r from-green-300 via-yellow-300 via-orange-400 to-red-500 relative">
+            <div className="h-3 rounded-full bg-linear-to-r from-green-300 via-yellow-300 via-orange-400 to-red-500 relative">
               <motion.div
                 initial={{ left: '0%' }}
                 animate={{ left: '95%' }}

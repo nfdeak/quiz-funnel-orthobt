@@ -1,6 +1,8 @@
 'use client';
 
+import { useEffect } from 'react';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { withBasePath } from '@/lib/withBasePath';
 
 interface EducationSlideProps {
@@ -8,8 +10,68 @@ interface EducationSlideProps {
 }
 
 export default function EducationSlide({ onContinue }: EducationSlideProps) {
+  useEffect(() => {
+    let cancelled = false;
+    let rafId: number;
+
+    const cancel = () => {
+      cancelled = true;
+      cancelAnimationFrame(rafId);
+    };
+
+    window.addEventListener('wheel', cancel, { once: true, passive: true });
+    window.addEventListener('touchstart', cancel, { once: true, passive: true });
+
+    const timer = setTimeout(() => {
+      if (cancelled) return;
+
+      const hasScrollableContent =
+        document.documentElement.scrollHeight > window.innerHeight;
+      const prefersReducedMotion =
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      if (!hasScrollableContent || prefersReducedMotion) {
+        window.removeEventListener('wheel', cancel);
+        window.removeEventListener('touchstart', cancel);
+        return;
+      }
+
+      const startY = window.scrollY;
+      const targetY = document.body.scrollHeight;
+      const distance = targetY - startY;
+      const duration = 2500;
+      const startTime = performance.now();
+
+      const step = (currentTime: number) => {
+        if (cancelled) return;
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const ease =
+          progress < 0.5
+            ? 4 * progress * progress * progress
+            : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+        window.scrollTo(0, startY + distance * ease);
+        if (progress < 1) {
+          rafId = requestAnimationFrame(step);
+        } else {
+          window.removeEventListener('wheel', cancel);
+          window.removeEventListener('touchstart', cancel);
+        }
+      };
+
+      rafId = requestAnimationFrame(step);
+    }, 1500);
+
+    return () => {
+      clearTimeout(timer);
+      cancelAnimationFrame(rafId);
+      window.removeEventListener('wheel', cancel);
+      window.removeEventListener('touchstart', cancel);
+    };
+  }, []);
+
   return (
-    <div className="w-full max-w-xl mx-auto px-6 py-10 max-md:pb-[80px]">
+    <div className="w-full max-w-xl mx-auto px-6 py-10 max-md:pb-20 max-md:min-h-[calc(100dvh+2px)]">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -38,11 +100,12 @@ export default function EducationSlide({ onContinue }: EducationSlideProps) {
         <div className="grid grid-cols-2 gap-3 mb-6">
           {/* Left: pain */}
           <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-center">
-            <div className="w-full rounded-lg overflow-hidden mb-3">
-              <img
+            <div className="relative w-full rounded-lg overflow-hidden mb-3 aspect-4/3">
+              <Image
                 src={withBasePath('/education/treatments-dont-work.png')}
                 alt="Treatments that don't work"
-                className="w-full object-cover"
+                fill
+                style={{ objectFit: 'cover' }}
               />
             </div>
             <div className="space-y-1.5">
@@ -57,11 +120,12 @@ export default function EducationSlide({ onContinue }: EducationSlideProps) {
 
           {/* Right: solution */}
           <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-center">
-            <div className="w-full rounded-lg overflow-hidden mb-3">
-              <img
-                src={withBasePath('/education/orthobelt-root-cause-fix.jpg')}
+            <div className="relative w-full rounded-lg overflow-hidden mb-3 aspect-4/3">
+              <Image
+                src={withBasePath('/education/orthobelt-root-cause-fix.png')}
                 alt="OrthoBelt root cause fix"
-                className="w-full object-cover"
+                fill
+                style={{ objectFit: 'cover' }}
               />
             </div>
             <div className="space-y-1.5">

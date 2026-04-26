@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { QuestionConfig, QuestionOption } from '@/lib/types';
 import { withBasePath } from '@/lib/withBasePath';
 import BodyDiagram from './BodyDiagram';
@@ -34,11 +35,11 @@ function PhotoCard({ option, isSelected, onClick }: { option: QuestionOption; is
           ${isSelected ? 'border-amber-500' : 'border-stone-200 hover:border-amber-300'}`}
       >
         {/* Image fills card */}
-        <img
+        <Image
           src={withBasePath(option.image!)}
           alt={option.label}
-          className="absolute inset-0 w-full h-full object-cover object-center"
-          loading="lazy"
+          fill
+          style={{ objectFit: 'cover', objectPosition: 'center' }}
         />
         {/* Gradient — bottom 55% of card */}
         <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.18) 50%, transparent 100%)' }} />
