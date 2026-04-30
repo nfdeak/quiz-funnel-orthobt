@@ -103,7 +103,7 @@ function printReport(funnelRows, answerRows) {
   }
 }
 
-loadEnvFile('.env.local');
+loadEnvFile('..env.local');
 loadEnvFile('.env');
 
 try {

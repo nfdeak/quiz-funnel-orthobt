@@ -1,0 +1,43 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "redirects": [
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "header",
+          "key": "accept-language",
+          "value": {
+            "pre": "de"
+          }
+        }
+      ],
+      "destination": "/orthogurtel-de",
+      "permanent": false
+    },
+    {
+      "source": "/",
+      "destination": "/orthobelt-us",
+      "permanent": false
+    },
+    {
+      "source": "/:path((?!analytics(?:/.*)?$|orthogurtel-de(?:/.*)?$|orthobelt-us(?:/.*)?$|_next/.*|.*\\.[^/]+$).+)",
+      "has": [
+        {
+          "type": "header",
+          "key": "accept-language",
+          "value": {
+            "pre": "de"
+          }
+        }
+      ],
+      "destination": "/orthogurtel-de",
+      "permanent": false
+    },
+    {
+      "source": "/:path((?!analytics(?:/.*)?$|orthogurtel-de(?:/.*)?$|orthobelt-us(?:/.*)?$|_next/.*|.*\\.[^/]+$).+)",
+      "destination": "/orthobelt-us",
+      "permanent": false
+    }
+  ]
+}

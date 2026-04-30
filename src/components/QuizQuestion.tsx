@@ -11,6 +11,7 @@ interface QuizQuestionProps {
   config: QuestionConfig;
   currentAnswer?: string | string[];
   onAnswer: (value: string | string[]) => void;
+  continueLabel: string;
 }
 
 function CheckBadge() {
@@ -157,7 +158,7 @@ function ListItem({ option, isSelected, isMulti, onClick, index }: {
 }
 
 // ── Main ────────────────────────────────────────────────────────────────────
-export default function QuizQuestion({ config, currentAnswer, onAnswer }: QuizQuestionProps) {
+export default function QuizQuestion({ config, currentAnswer, onAnswer, continueLabel }: QuizQuestionProps) {
   const [selected, setSelected] = useState<string[]>(
     Array.isArray(currentAnswer) ? currentAnswer : currentAnswer ? [currentAnswer] : []
   );
@@ -238,7 +239,7 @@ export default function QuizQuestion({ config, currentAnswer, onAnswer }: QuizQu
             disabled={selected.length === 0}
             className="w-full py-4 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-lg tracking-wide transition-colors duration-200 disabled:opacity-40"
           >
-            Continue →
+            {continueLabel}
           </motion.button>
         </motion.div>
       )}

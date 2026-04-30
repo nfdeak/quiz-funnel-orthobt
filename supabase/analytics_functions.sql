@@ -2,6 +2,7 @@ do $$
 declare
   event_type_udt text;
   environment_udt text;
+  locale_udt text;
   constraint_name text;
 begin
   select udt_name
@@ -18,15 +19,28 @@ begin
   alter table public.quiz_events
     add column if not exists environment text;
 
+  alter table public.quiz_events
+    add column if not exists locale text;
+
   update public.quiz_events
   set environment = 'prod'
   where environment is null;
+
+  update public.quiz_events
+  set locale = 'en-US'
+  where locale is null;
 
   alter table public.quiz_events
     alter column environment set default 'prod';
 
   alter table public.quiz_events
     alter column environment set not null;
+
+  alter table public.quiz_events
+    alter column locale set default 'en-US';
+
+  alter table public.quiz_events
+    alter column locale set not null;
 
   select udt_name
   into environment_udt
@@ -88,6 +102,40 @@ begin
       add constraint quiz_events_environment_check
       check (environment in ('dev', 'preview', 'prod'));
   end if;
+
+  select udt_name
+  into locale_udt
+  from information_schema.columns
+  where table_schema = 'public'
+    and table_name = 'quiz_events'
+    and column_name = 'locale';
+
+  if exists (
+    select 1
+    from pg_type
+    where typname = locale_udt
+      and typtype = 'e'
+  ) then
+    execute format('alter type %I add value if not exists ''en-US''', locale_udt);
+    execute format('alter type %I add value if not exists ''de-DE''', locale_udt);
+  else
+    for constraint_name in
+      select con.conname
+      from pg_constraint con
+      join pg_class rel on rel.oid = con.conrelid
+      join pg_namespace nsp on nsp.oid = rel.relnamespace
+      where nsp.nspname = 'public'
+        and rel.relname = 'quiz_events'
+        and con.contype = 'c'
+        and pg_get_constraintdef(con.oid) like '%locale%'
+    loop
+      execute format('alter table public.quiz_events drop constraint %I', constraint_name);
+    end loop;
+
+    alter table public.quiz_events
+      add constraint quiz_events_locale_check
+      check (locale in ('en-US', 'de-DE'));
+  end if;
 end
 $$;
 
@@ -95,7 +143,8 @@ create or replace function public.analytics_overview(
   p_from timestamptz default null,
   p_to timestamptz default null,
   p_version text default null,
-  p_environment text default null
+  p_environment text default null,
+  p_locale text default null
 )
 returns table(
   total_events bigint,
@@ -115,14 +164,16 @@ as $$
   where (p_from is null or created_at >= p_from)
     and (p_to is null or created_at < p_to)
     and (p_version is null or version = p_version)
-    and (p_environment is null or environment = p_environment);
+    and (p_environment is null or environment = p_environment)
+    and (p_locale is null or locale = p_locale);
 $$;
 
 create or replace function public.analytics_funnel_summary(
   p_from timestamptz default null,
   p_to timestamptz default null,
   p_version text default null,
-  p_environment text default null
+  p_environment text default null,
+  p_locale text default null
 )
 returns table(
   step_position integer,
@@ -158,6 +209,7 @@ as $$
       and (p_to is null or created_at < p_to)
       and (p_version is null or version = p_version)
       and (p_environment is null or environment = p_environment)
+      and (p_locale is null or locale = p_locale)
   ),
   filtered_cta_clicks as (
     select distinct session_id
@@ -168,6 +220,7 @@ as $$
       and (p_to is null or created_at < p_to)
       and (p_version is null or version = p_version)
       and (p_environment is null or environment = p_environment)
+      and (p_locale is null or locale = p_locale)
   ),
   filtered_results2_reached as (
     select session_id
@@ -235,7 +288,8 @@ create or replace function public.analytics_answer_distribution(
   p_from timestamptz default null,
   p_to timestamptz default null,
   p_version text default null,
-  p_environment text default null
+  p_environment text default null,
+  p_locale text default null
 )
 returns table(
   question_id text,
@@ -256,6 +310,7 @@ as $$
       and (p_to is null or created_at < p_to)
       and (p_version is null or version = p_version)
       and (p_environment is null or environment = p_environment)
+      and (p_locale is null or locale = p_locale)
   ),
   answer_rows as (
     select question_id, answer_text as answer
@@ -289,6 +344,6 @@ as $$
   order by answer_rows.question_id, count desc, answer_rows.answer;
 $$;
 
-grant execute on function public.analytics_overview(timestamptz, timestamptz, text, text) to anon, authenticated;
-grant execute on function public.analytics_funnel_summary(timestamptz, timestamptz, text, text) to anon, authenticated;
-grant execute on function public.analytics_answer_distribution(timestamptz, timestamptz, text, text) to anon, authenticated;
+grant execute on function public.analytics_overview(timestamptz, timestamptz, text, text, text) to anon, authenticated;
+grant execute on function public.analytics_funnel_summary(timestamptz, timestamptz, text, text, text) to anon, authenticated;
+grant execute on function public.analytics_answer_distribution(timestamptz, timestamptz, text, text, text) to anon, authenticated;

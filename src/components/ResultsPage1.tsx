@@ -3,13 +3,15 @@
 import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
+import { ResultsPage1Content } from '@/lib/quizData';
 import { withBasePath } from '@/lib/withBasePath';
 
 interface ResultsPage1Props {
   onContinue: () => void;
+  content: ResultsPage1Content;
 }
 
-export default function ResultsPage1({ onContinue }: ResultsPage1Props) {
+export default function ResultsPage1({ onContinue, content }: ResultsPage1Props) {
   useEffect(() => {
     let cancelled = false;
     let rafId: number;
@@ -79,27 +81,20 @@ export default function ResultsPage1({ onContinue }: ResultsPage1Props) {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        {/* Header */}
         <div className="text-center mb-8">
-          <p className="text-amber-600 uppercase tracking-widest text-xs font-semibold mb-2">
-            Your assessment is ready
-          </p>
-          <h2 className="text-2xl md:text-3xl font-bold text-stone-800 mb-1">
-            Summary of your Back Pain Profile
-          </h2>
-          <p className="text-stone-500 text-sm">Based on your answers</p>
+          <p className="text-amber-600 uppercase tracking-widest text-xs font-semibold mb-2">{content.badge}</p>
+          <h2 className="text-2xl md:text-3xl font-bold text-stone-800 mb-1">{content.title}</h2>
+          <p className="text-stone-500 text-sm">{content.subtitle}</p>
         </div>
 
-        {/* Dysfunction Level Card */}
         <div className="bg-white rounded-2xl border border-stone-200 shadow-sm p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
-            <span className="text-stone-600 font-medium text-sm">Level of SI joint dysfunction</span>
+            <span className="text-stone-600 font-medium text-sm">{content.severityLabel}</span>
             <span className="bg-red-100 text-red-600 text-sm font-bold px-3 py-1 rounded-full">
-              HIGH
+              {content.severityValue}
             </span>
           </div>
 
-          {/* SI Joint illustration */}
           <div className="w-full rounded-xl overflow-hidden mb-5">
             <Image
               src={withBasePath('/education/si-joint-inflamed.png')}
@@ -110,13 +105,12 @@ export default function ResultsPage1({ onContinue }: ResultsPage1Props) {
             />
           </div>
 
-          {/* Slider scale */}
           <div className="mb-2">
             <div className="flex justify-between text-xs text-stone-400 mb-1">
-              <span>Low</span>
-              <span>Normal</span>
-              <span>Medium</span>
-              <span className="font-bold text-red-500">High ◀</span>
+              <span>{content.scaleLabels[0]}</span>
+              <span>{content.scaleLabels[1]}</span>
+              <span>{content.scaleLabels[2]}</span>
+              <span className="font-bold text-red-500">{content.scaleLabels[3]}</span>
             </div>
             <div className="h-3 rounded-full bg-linear-to-r from-green-300 via-yellow-300 via-orange-400 to-red-500 relative">
               <motion.div
@@ -130,17 +124,13 @@ export default function ResultsPage1({ onContinue }: ResultsPage1Props) {
           </div>
         </div>
 
-        {/* Warning box */}
         <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6 flex gap-3">
           <span className="text-xl shrink-0">⚠️</span>
           <p className="text-red-800 text-sm leading-relaxed">
-            <strong>HIGH level.</strong> Your symptoms suggest significant SI joint instability.
-            This is likely caused by prolonged sitting, repetitive movement, and lack of targeted
-            joint support.
+            <strong>{content.warningTitle}</strong> {content.warningBody}
           </p>
         </div>
 
-        {/* Data table */}
         <div className="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden mb-8">
           <table className="w-full text-sm">
             <thead>
@@ -150,12 +140,7 @@ export default function ResultsPage1({ onContinue }: ResultsPage1Props) {
               </tr>
             </thead>
             <tbody>
-              {[
-                { label: 'Pain type', value: 'Nerve irritation', highlight: true },
-                { label: 'Root cause', value: 'SI joint dysfunction', highlight: true },
-                { label: 'Room for improvement', value: 'High', highlight: true },
-                { label: 'Impact on daily life', value: 'Noticeable', highlight: false },
-              ].map((row, i) => (
+              {content.metrics.map((row, i) => (
                 <tr key={row.label} className={i < 2 ? 'border-b border-stone-100' : ''}>
                   <td className="px-4 py-3 text-stone-600">{row.label}</td>
                   <td
@@ -183,7 +168,7 @@ export default function ResultsPage1({ onContinue }: ResultsPage1Props) {
             onClick={onContinue}
             className="w-full py-4 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-lg tracking-wide transition-colors duration-200"
           >
-            Continue →
+            {content.continueLabel}
           </motion.button>
         </motion.div>
       </motion.div>

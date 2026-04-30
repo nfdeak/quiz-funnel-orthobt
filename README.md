@@ -36,6 +36,8 @@ One-time Supabase step:
 1. Open SQL Editor in Supabase.
 2. Run `supabase/analytics_functions.sql`.
 
+Tracked quiz events now include `locale`, and the dashboard can filter by locale.
+
 The dashboard defaults to `prod` so local/dev traffic does not pollute the main view.
 
 Inspect analytics in the browser:
@@ -43,6 +45,11 @@ Inspect analytics in the browser:
 ```bash
 http://localhost:3000/analytics
 ```
+
+Canonical localized quiz routes:
+
+- `/orthobelt-us`
+- `/orthogurtel-de`
 
 Run the terminal report:
 

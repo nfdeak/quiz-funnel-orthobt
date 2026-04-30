@@ -1,5 +1,16 @@
 export type Version = 'a' | 'b';
 
+export type LocalizationLocale = 'de-DE' | 'en-US';
+export type LocalizationMarket = 'de' | 'us';
+export type LocalizationSlug = 'orthogurtel-de' | 'orthobelt-us';
+
+export interface Localization {
+  locale: LocalizationLocale;
+  market: LocalizationMarket;
+  slug: LocalizationSlug;
+  productUrl: string;
+}
+
 export type Screen =
   | 'landing'
   | 'q1'

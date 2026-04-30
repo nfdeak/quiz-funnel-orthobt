@@ -1,3 +1,5 @@
+import { LocalizationLocale } from './types';
+
 export type StepId =
   | 'landing'
   | 'q1'
@@ -20,6 +22,7 @@ export type AnalyticsEvent = {
   timestamp: string;
   version: 'a' | 'b';
   environment: AnalyticsEnvironment;
+  locale: LocalizationLocale;
   eventType: 'step_view' | 'answer' | 'cta_click';
   stepId: StepId;
   questionId?: QuestionId;
@@ -33,6 +36,7 @@ export type SupabaseEventRow = {
   session_id: string;
   version: 'a' | 'b';
   environment: AnalyticsEnvironment;
+  locale: LocalizationLocale;
   event_type: 'step_view' | 'answer' | 'cta_click';
   step_id: StepId;
   question_id: QuestionId | null;
@@ -83,6 +87,7 @@ export function toSupabaseRow(event: AnalyticsEvent): SupabaseEventRow {
     session_id: event.sessionId,
     version: event.version,
     environment: event.environment,
+    locale: event.locale,
     event_type: event.eventType,
     step_id: event.stepId,
     question_id: event.questionId ?? null,
@@ -117,12 +122,14 @@ export function buildAnalyticsParams(input: {
   to: string | null;
   version: 'a' | 'b' | 'all';
   environment: AnalyticsEnvironment | 'all';
+  locale: LocalizationLocale | 'all';
 }) {
   return {
     p_from: input.from,
     p_to: input.to,
     p_version: input.version === 'all' ? null : input.version,
     p_environment: input.environment === 'all' ? null : input.environment,
+    p_locale: input.locale === 'all' ? null : input.locale,
   };
 }
 
@@ -157,6 +164,7 @@ export async function fetchRecentSupabaseEvents(
     to: string | null;
     version: 'a' | 'b' | 'all';
     environment: AnalyticsEnvironment | 'all';
+    locale: LocalizationLocale | 'all';
     limit?: number;
   }
 ) {
@@ -179,6 +187,10 @@ export async function fetchRecentSupabaseEvents(
 
   if (params.environment !== 'all') {
     searchParams.set('environment', `eq.${params.environment}`);
+  }
+
+  if (params.locale !== 'all') {
+    searchParams.set('locale', `eq.${params.locale}`);
   }
 
   const response = await fetch(`${config.url}/rest/v1/quiz_events?${searchParams.toString()}`, {

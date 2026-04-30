@@ -14,9 +14,11 @@ import {
   QUESTION_ORDER,
   SupabaseEventRow,
 } from '@/lib/analytics';
+import { LocalizationLocale } from '@/lib/types';
 
 type DateRange = '24h' | '7d' | '30d' | 'all';
 type EnvironmentFilter = AnalyticsEnvironment | 'all';
+type LocaleFilter = LocalizationLocale | 'all';
 type VersionFilter = 'all' | 'a' | 'b';
 
 const STEP_LABELS: Record<string, string> = {
@@ -121,6 +123,7 @@ export default function AnalyticsPage() {
   const [refreshing, setRefreshing] = useState(false);
   const [dateRange, setDateRange] = useState<DateRange>('all');
   const [environmentFilter, setEnvironmentFilter] = useState<EnvironmentFilter>('prod');
+  const [localeFilter, setLocaleFilter] = useState<LocaleFilter>('all');
   const [versionFilter, setVersionFilter] = useState<VersionFilter>('all');
 
   const loadAnalytics = useCallback(async (silent = false) => {
@@ -138,6 +141,7 @@ export default function AnalyticsPage() {
         from: getRangeFromIso(dateRange),
         to: null,
         environment: environmentFilter,
+        locale: localeFilter,
         version: versionFilter,
       });
 
@@ -149,6 +153,7 @@ export default function AnalyticsPage() {
           from: params.p_from,
           to: params.p_to,
           environment: environmentFilter,
+          locale: localeFilter,
           version: versionFilter,
           limit: 25,
         }),
@@ -164,10 +169,14 @@ export default function AnalyticsPage() {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [dateRange, environmentFilter, versionFilter]);
+  }, [dateRange, environmentFilter, localeFilter, versionFilter]);
 
   useEffect(() => {
-    void loadAnalytics();
+    const timer = window.setTimeout(() => {
+      void loadAnalytics();
+    }, 0);
+
+    return () => window.clearTimeout(timer);
   }, [loadAnalytics]);
 
   const groupedAnswers = useMemo(() => groupAnswerRows(answerRows), [answerRows]);
@@ -190,11 +199,15 @@ export default function AnalyticsPage() {
 
   const exportCsv = useCallback(() => {
     const rows = [
-      ['section', 'key', 'label', 'value', 'extra_1', 'extra_2'],
-      ['overview', 'total_events', 'Total events', String(overview?.total_events ?? 0), '', ''],
-      ['overview', 'total_sessions', 'Total sessions', String(overview?.total_sessions ?? 0), '', ''],
-      ['overview', 'avg_screens_per_session', 'Average screens per session', averageScreensPerSession.toFixed(2), '', ''],
-      ['overview', 'avg_questions_per_session', 'Average questions per session', averageQuestionsPerSession.toFixed(2), '', ''],
+      ['section', 'key', 'label', 'value', 'extra_1', 'extra_2', 'extra_3'],
+      ['filters', 'date_range', 'Date range', dateRange, '', '', ''],
+      ['filters', 'environment', 'Environment', environmentFilter, '', '', ''],
+      ['filters', 'locale', 'Locale', localeFilter, '', '', ''],
+      ['filters', 'version', 'Version', versionFilter, '', '', ''],
+      ['overview', 'total_events', 'Total events', String(overview?.total_events ?? 0), '', '', ''],
+      ['overview', 'total_sessions', 'Total sessions', String(overview?.total_sessions ?? 0), '', '', ''],
+      ['overview', 'avg_screens_per_session', 'Average screens per session', averageScreensPerSession.toFixed(2), '', '', ''],
+      ['overview', 'avg_questions_per_session', 'Average questions per session', averageQuestionsPerSession.toFixed(2), '', '', ''],
       [
         'overview',
         'most_abandoned_screen',
@@ -202,8 +215,9 @@ export default function AnalyticsPage() {
         mostAbandonedScreen ? getStepLabel(mostAbandonedScreen.step_id) : '',
         String(mostAbandonedScreen?.dropped ?? 0),
         mostAbandonedScreen ? `${Number(mostAbandonedScreen.dropoff_rate).toFixed(1)}%` : '',
+        '',
       ],
-      ['overview', 'final_screen_reach_rate', 'Final screen reach rate', `${finalScreenReachRate.toFixed(1)}%`, String(finalCtaRow?.reached ?? 0), ''],
+      ['overview', 'final_screen_reach_rate', 'Final screen reach rate', `${finalScreenReachRate.toFixed(1)}%`, String(finalCtaRow?.reached ?? 0), '', ''],
       [
         'overview',
         'final_cta_clicks',
@@ -211,6 +225,7 @@ export default function AnalyticsPage() {
         String(finalCtaRow?.continued ?? 0),
         String(finalCtaRow?.reached ?? 0),
         finalCtaRow ? `${finalCtaConversionRate.toFixed(1)}%` : '',
+        '',
       ],
       ...funnelRows.map((row) => [
         'funnel',
@@ -219,6 +234,7 @@ export default function AnalyticsPage() {
         String(row.reached),
         String(row.dropped),
         String(row.dropoff_rate),
+        '',
       ]),
       ...answerRows.map((row) => [
         'answers',
@@ -227,6 +243,16 @@ export default function AnalyticsPage() {
         String(row.count),
         String(row.responses),
         String(row.percent),
+        '',
+      ]),
+      ...recentEvents.map((event) => [
+        'recent_events',
+        event.event_type,
+        event.session_id,
+        event.created_at,
+        event.locale,
+        event.step_id,
+        event.answer_text ?? (event.answer_json ? event.answer_json.join(', ') : '-'),
       ]),
     ];
 
@@ -237,7 +263,7 @@ export default function AnalyticsPage() {
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
-    const suffix = `${environmentFilter}-${versionFilter}-${dateRange}`;
+    const suffix = `${environmentFilter}-${localeFilter}-${versionFilter}-${dateRange}`;
 
     link.href = url;
     link.download = `quiz-analytics-summary-${suffix}.csv`;
@@ -255,8 +281,10 @@ export default function AnalyticsPage() {
     funnelRows,
     finalCtaRow,
     finalScreenReachRate,
+    localeFilter,
     mostAbandonedScreen,
     overview,
+    recentEvents,
     versionFilter,
   ]);
 
@@ -301,6 +329,23 @@ export default function AnalyticsPage() {
                 }
               >
                 {environment === 'all' ? 'All environments' : environment.toUpperCase()}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            {(['all', 'en-US', 'de-DE'] as LocaleFilter[]).map((locale) => (
+              <button
+                key={locale}
+                type="button"
+                onClick={() => setLocaleFilter(locale)}
+                className={
+                  localeFilter === locale
+                    ? 'rounded-full bg-fuchsia-400 px-4 py-2 text-sm font-medium text-stone-950'
+                    : 'rounded-full border border-stone-700 px-4 py-2 text-sm text-stone-300'
+                }
+              >
+                {locale === 'all' ? 'All locales' : locale}
               </button>
             ))}
           </div>
@@ -383,6 +428,10 @@ export default function AnalyticsPage() {
               <div className="rounded-2xl border border-stone-800 bg-stone-900 p-5">
                 <p className="text-sm text-stone-400">Environment</p>
                 <p className="mt-2 text-3xl font-semibold uppercase">{environmentFilter}</p>
+              </div>
+              <div className="rounded-2xl border border-stone-800 bg-stone-900 p-5">
+                <p className="text-sm text-stone-400">Locale</p>
+                <p className="mt-2 text-3xl font-semibold">{localeFilter}</p>
               </div>
               <div className="rounded-2xl border border-stone-800 bg-stone-900 p-5">
                 <p className="text-sm text-stone-400">Sessions in range</p>
@@ -520,6 +569,7 @@ export default function AnalyticsPage() {
                       <th className="pb-3 pr-6">Session</th>
                       <th className="pb-3 pr-6">Type</th>
                       <th className="pb-3 pr-6">Env</th>
+                      <th className="pb-3 pr-6">Locale</th>
                       <th className="pb-3 pr-6">Step</th>
                       <th className="pb-3 pr-6">Question</th>
                       <th className="pb-3">Answer</th>
@@ -532,6 +582,7 @@ export default function AnalyticsPage() {
                         <td className="py-3 pr-6 font-mono text-xs text-stone-300">{event.session_id}</td>
                         <td className="py-3 pr-6">{event.event_type}</td>
                         <td className="py-3 pr-6 uppercase text-stone-400">{event.environment}</td>
+                        <td className="py-3 pr-6 text-stone-300">{event.locale}</td>
                         <td className="py-3 pr-6">{event.step_id}</td>
                         <td className="py-3 pr-6">{event.question_id ? QUESTION_LABELS[event.question_id] : '-'}</td>
                         <td className="py-3">{event.answer_text ?? (event.answer_json ? event.answer_json.join(', ') : '-')}</td>

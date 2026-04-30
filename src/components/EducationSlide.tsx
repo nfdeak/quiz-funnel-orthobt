@@ -3,13 +3,15 @@
 import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
+import { EducationSlideContent } from '@/lib/quizData';
 import { withBasePath } from '@/lib/withBasePath';
 
 interface EducationSlideProps {
   onContinue: () => void;
+  content: EducationSlideContent;
 }
 
-export default function EducationSlide({ onContinue }: EducationSlideProps) {
+export default function EducationSlide({ onContinue, content }: EducationSlideProps) {
   useEffect(() => {
     let cancelled = false;
     let rafId: number;
@@ -78,27 +80,15 @@ export default function EducationSlide({ onContinue }: EducationSlideProps) {
         transition={{ duration: 0.5 }}
       >
         <div className="text-center mb-8">
-          <p className="text-amber-600 uppercase tracking-widest text-xs font-semibold mb-3">
-            The truth about back pain
-          </p>
-          <h2 className="text-2xl md:text-3xl font-bold text-stone-800 leading-snug">
-            Why does nothing work on chronic back pain &amp; sciatica?
-          </h2>
+          <p className="text-amber-600 uppercase tracking-widest text-xs font-semibold mb-3">{content.badge}</p>
+          <h2 className="text-2xl md:text-3xl font-bold text-stone-800 leading-snug">{content.title}</h2>
         </div>
 
-        {/* Key insight */}
         <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 mb-6">
-          <p className="text-stone-700 text-base leading-relaxed text-center">
-            Stretching, physiotherapy, and pain medication{' '}
-            <strong className="text-stone-900">don&#39;t work long-term </strong> because they don&#39;t
-            address the SI joint — the <strong className="text-amber-700">real source</strong> of
-            your pain.
-          </p>
+          <p className="text-stone-700 text-base leading-relaxed text-center">{content.insight}</p>
         </div>
 
-        {/* Side-by-side illustration */}
         <div className="grid grid-cols-2 gap-3 mb-6">
-          {/* Left: pain */}
           <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-center">
             <div className="relative w-full rounded-lg overflow-hidden mb-3 aspect-4/3">
               <Image
@@ -109,16 +99,15 @@ export default function EducationSlide({ onContinue }: EducationSlideProps) {
               />
             </div>
             <div className="space-y-1.5">
-              {['Pain pills ✗', 'Stretching ✗', 'Physio ✗'].map((t) => (
+              {content.symptomTags.map((t) => (
                 <div key={t} className="text-red-600 text-xs font-medium bg-red-100 rounded-md px-2 py-1">
                   {t}
                 </div>
               ))}
             </div>
-            <p className="text-red-500 text-xs mt-2 font-medium">Treats symptoms only</p>
+            <p className="text-red-500 text-xs mt-2 font-medium">{content.symptomFooter}</p>
           </div>
 
-          {/* Right: solution */}
           <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-center">
             <div className="relative w-full rounded-lg overflow-hidden mb-3 aspect-4/3">
               <Image
@@ -129,23 +118,18 @@ export default function EducationSlide({ onContinue }: EducationSlideProps) {
               />
             </div>
             <div className="space-y-1.5">
-              {['SI Joint ✓', 'Stabilization ✓', 'OrthoBelt ✓'].map((t) => (
+              {content.solutionTags.map((t) => (
                 <div key={t} className="text-green-700 text-xs font-medium bg-green-100 rounded-md px-2 py-1">
                   {t}
                 </div>
               ))}
             </div>
-            <p className="text-green-600 text-xs mt-2 font-medium">Addresses root cause</p>
+            <p className="text-green-600 text-xs mt-2 font-medium">{content.solutionFooter}</p>
           </div>
         </div>
 
-        {/* Conclusion */}
         <div className="bg-stone-800 rounded-2xl p-5 mb-8 text-center">
-          <p className="text-white text-base leading-relaxed">
-            If you want to <strong className="text-amber-400">actually fix </strong> your back pain,
-            you need to stabilise the SI joint — and that&#39;s exactly what the{' '}
-            <strong className="text-amber-400">OrthoBelt</strong> was designed to do.
-          </p>
+          <p className="text-white text-base leading-relaxed">{content.conclusion}</p>
         </div>
 
         <motion.div
@@ -160,7 +144,7 @@ export default function EducationSlide({ onContinue }: EducationSlideProps) {
             onClick={onContinue}
             className="w-full py-4 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-lg tracking-wide transition-colors duration-200"
           >
-            Continue →
+            {content.continueLabel}
           </motion.button>
         </motion.div>
       </motion.div>

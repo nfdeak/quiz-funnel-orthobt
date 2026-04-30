@@ -2,8 +2,8 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Screen, Answers, Version } from '@/lib/types';
-import { QUESTIONS, getNextScreen } from '@/lib/quizData';
+import { Screen, Answers, Localization, Version } from '@/lib/types';
+import { getNextScreen, getQuizContent } from '@/lib/quizData';
 import { getAnalyticsEnvironment, getSupabaseBrowserConfig, toSupabaseRow } from '@/lib/analytics';
 import QuizHeader from './QuizHeader';
 import LandingPage from './LandingPage';
@@ -24,6 +24,7 @@ function createSessionId() {
 
 interface QuizFunnelProps {
   version: Version;
+  localization: Localization;
 }
 
 const slideVariants = {
@@ -32,15 +33,14 @@ const slideVariants = {
   exit: { opacity: 0, x: -40 },
 };
 
-export default function QuizFunnel({ version }: QuizFunnelProps) {
-  const genderOptions = ['Male', 'Female'] as const;
+export default function QuizFunnel({ version, localization }: QuizFunnelProps) {
   const environment = getAnalyticsEnvironment();
   const initialScreen: Screen = version === 'b' ? 'landing' : 'q1';
   const [screen, setScreen] = useState<Screen>(initialScreen);
   const [answers, setAnswers] = useState<Answers>({});
-  const [direction, setDirection] = useState(1);
   const sessionIdRef = useRef('');
   const lastTrackedScreenRef = useRef<Screen | null>(null);
+  const content = getQuizContent(localization.locale);
 
   const trackEvent = useCallback(
     (payload: {
@@ -74,6 +74,7 @@ export default function QuizFunnel({ version }: QuizFunnelProps) {
             timestamp: new Date().toISOString(),
             version,
             environment,
+            locale: localization.locale,
             ...payload,
           })
         ),
@@ -86,7 +87,7 @@ export default function QuizFunnel({ version }: QuizFunnelProps) {
         console.error('Failed to track analytics event', payload.eventType, error);
       });
     },
-    [environment, version]
+    [environment, localization.locale, version]
   );
 
   useEffect(() => {
@@ -112,7 +113,6 @@ export default function QuizFunnel({ version }: QuizFunnelProps) {
   const advance = useCallback(
     (nextScreen?: Screen) => {
       window.scrollTo(0, 0);
-      setDirection(1);
       setScreen((cur) => nextScreen ?? getNextScreen(cur, version));
     },
     [version]
@@ -139,7 +139,7 @@ export default function QuizFunnel({ version }: QuizFunnelProps) {
 
   const showHeader = screen !== 'landing';
 
-  const questionConfig = QUESTIONS.find((q) => q.screen === screen);
+  const questionConfig = content.questions.find((q) => q.screen === screen);
 
   return (
     <div className="min-h-screen bg-[#FAF7F2] flex flex-col">
@@ -147,7 +147,7 @@ export default function QuizFunnel({ version }: QuizFunnelProps) {
 
       <div className="flex-1 flex items-start justify-center">
         {screen === 'landing' ? (
-          <LandingPage onGenderSelect={handleGenderSelect} />
+          <LandingPage onGenderSelect={handleGenderSelect} content={content.landing} />
         ) : (
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
@@ -164,15 +164,21 @@ export default function QuizFunnel({ version }: QuizFunnelProps) {
                   config={questionConfig}
                   currentAnswer={answers[questionConfig.id]}
                   onAnswer={(val) => handleAnswer(questionConfig.id, val)}
+                  continueLabel={content.multiSelectContinueLabel}
                 />
               )}
 
-              {screen === 'results1' && <ResultsPage1 onContinue={() => advance()} />}
+              {screen === 'results1' && <ResultsPage1 onContinue={() => advance()} content={content.results1} />}
 
-              {screen === 'education' && <EducationSlide onContinue={() => advance()} />}
+              {screen === 'education' && <EducationSlide onContinue={() => advance()} content={content.education} />}
 
               {screen === 'results2' && (
-                <ResultsPage2 onClaimDiscount={() => trackEvent({ eventType: 'cta_click', stepId: 'results2' })} />
+                <ResultsPage2
+                  onClaimDiscount={() => trackEvent({ eventType: 'cta_click', stepId: 'results2' })}
+                  content={content.results2}
+                  locale={localization.locale}
+                  productUrl={localization.productUrl}
+                />
               )}
             </motion.div>
           </AnimatePresence>
@@ -186,19 +192,16 @@ export default function QuizFunnel({ version }: QuizFunnelProps) {
           transition={{ duration: 0.6, ease: 'easeOut' }}
           className="fixed inset-x-0 bottom-0 z-50 border-t border-white/10 bg-black/70 px-4 pt-3 pb-[calc(env(safe-area-inset-bottom)+1rem)] backdrop-blur-md md:hidden"
         >
-          <p className="text-center text-white/60 text-[11px] uppercase tracking-[0.2em] mb-3">
-            Take the free 60-second quiz
-          </p>
+          <p className="text-center text-white/60 text-[11px] uppercase tracking-[0.2em] mb-3">{content.landing.ctaLabel}</p>
           <div className="flex gap-3">
-            {genderOptions.map((gender) => (
+            {content.landing.genderOptions.map((gender) => (
               <motion.button
-                key={`sticky-${gender}`}
+                key={`sticky-${gender.value}`}
                 whileTap={{ scale: 0.98 }}
-                onClick={() => handleGenderSelect(gender.toLowerCase())}
+                onClick={() => handleGenderSelect(gender.value)}
                 className="flex-1 rounded-xl bg-amber-500 py-4 text-base font-bold tracking-wide text-white shadow-lg shadow-amber-500/20 transition-colors duration-200 active:bg-amber-600"
               >
-                {gender === 'Male' ? '♂ ' : '♀ '}
-                {gender.toUpperCase()}
+                {gender.icon} {gender.label.toUpperCase()}
               </motion.button>
             ))}
           </div>
