@@ -170,9 +170,9 @@ const GERMAN_QUESTIONS: QuestionConfig[] = [
     layout: 'grid',
     question: 'Wie alt sind Sie?',
     options: [
-      { value: '<39', label: '30–39', sublabel: 'Jahre alt', image: '/quiz/30_39.png' },
-      { value: '40-49', label: '40–49', sublabel: 'Jahre alt', image: '/quiz/40_49.png' },
-      { value: '50-59', label: '50-59', sublabel: 'Jahre alt', image: '/quiz/50_plus.png' },
+      { value: '<39', label: '30–39', sublabel: 'Jahre alt', image: '/quiz/20_29.png' },
+      { value: '40-49', label: '40–49', sublabel: 'Jahre alt', image: '/quiz/30_39.png' },
+      { value: '50-59', label: '50-59', sublabel: 'Jahre alt', image: '/quiz/40_49.png' },
       { value: '60+', label: '60+', sublabel: 'Jahre alt', image: '/quiz/50_plus.png' },
     ],
   },
