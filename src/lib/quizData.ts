@@ -71,9 +71,9 @@ const ENGLISH_QUESTIONS: QuestionConfig[] = [
     layout: 'grid',
     question: 'How old are you?',
     options: [
-      { value: '<39', label: '30–39', sublabel: 'Years Old', image: '/quiz/30_39.png' },
-      { value: '40-49', label: '40–49', sublabel: 'Years Old', image: '/quiz/40_49.png' },
-      { value: '50-59', label: '50-59', sublabel: 'Years Old', image: '/quiz/50_plus.png' },
+      { value: '<39', label: '30–39', sublabel: 'Years Old', image: '/quiz/20_29.png' },
+      { value: '40-49', label: '40–49', sublabel: 'Years Old', image: '/quiz/30_39.png' },
+      { value: '50-59', label: '50-59', sublabel: 'Years Old', image: '/quiz/40_49.png' },
       { value: '60+', label: '60+', sublabel: 'Years Old', image: '/quiz/50_plus.png' },
     ],
   },
